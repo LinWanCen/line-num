@@ -1,7 +1,11 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# find-author Changelog
+# line-num Changelog
 
-## [Unreleased]
-### Added
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
+## [1.0.0]
+
+- 1.00 show line count for file / method, show children count for dir
+
+# 中文更新日志
+
+- 1.00 显示文件/方法行数，文件夹子对象数

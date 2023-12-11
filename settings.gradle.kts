@@ -1,1 +1,1 @@
-rootProject.name = "find-author"
+rootProject.name = "line-num"

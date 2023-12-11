@@ -1,18 +1,21 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
-<idea-plugin>
-    <id>com.github.linwancen.findauthor</id>
-    <name>IntelliJ Platform Plugin find-author</name>
-    <vendor>linwancen</vendor>
+<idea-plugin url="https://plugins.jetbrains.com/plugin/23300-line-num">
+    <id>io.github.linwancen.plugin.line</id>
+    <name>Line Num</name>
+    <vendor email="1498425439@qq.com" url="https://github.com/LinWanCen/line-num">林万程</vendor>
 
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.linwancen.findauthor.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.linwancen.findauthor.services.MyProjectService"/>
+        <projectViewNodeDecorator implementation="io.github.linwancen.plugin.line.TreeNum"/>
+
+        <applicationConfigurable parentId="tools"
+                                 instance="io.github.linwancen.plugin.line.settings.AppSettingsConfigurable"
+                                 id="io.github.linwancen.plugin.line.settings.AppSettingsConfigurable"
+                                 displayName="Line Num"/>
+        <applicationService serviceImplementation="io.github.linwancen.plugin.line.settings.AppSettingsState"/>
+
+        <applicationService serviceImplementation="io.github.linwancen.plugin.line.settings.I18n"/>
     </extensions>
 
-    <applicationListeners>
-        <listener class="com.github.linwancen.findauthor.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
 </idea-plugin>
