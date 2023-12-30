@@ -1,6 +1,5 @@
 # 行数 line-num
 
-![Build](https://github.com/LinWanCen/line-num/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/23300-line-num.svg)](https://plugins.jetbrains.com/plugin/23300-line-num)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/23300-line-num.svg)](https://plugins.jetbrains.com/plugin/23300-line-num)
 
