@@ -7,7 +7,14 @@
 
 <!-- Plugin description -->
 
-show line count for file / method, show children count for dir.
+show line count for file / method, show children count for dir in project view (tree on left).
+
+显示文件行数、文件数。
+
+- Config: settings -> Tools -> Line Num 
+  - [√] Children num 
+  - [√] File line
+  - [√] Method line
 
 ## My Plugin
 - Show doc comment at the Project view Tree, line End, json etc.: [Show Comment]

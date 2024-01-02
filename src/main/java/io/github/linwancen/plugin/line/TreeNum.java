@@ -6,6 +6,7 @@ import com.intellij.ide.projectView.ProjectViewNodeDecorator;
 import com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.ide.util.treeView.PresentableNodeDescriptor;
+import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -36,6 +37,8 @@ public class TreeNum implements ProjectViewNodeDecorator {
                 return;
             }
             addText(data, String.valueOf(num));
+        } catch (ProcessCanceledException ignore) {
+            // ignore
         } catch (Throwable e) {
             LOG.info("TreeState catch Throwable but log to record.", e);
         }
@@ -77,7 +80,10 @@ public class TreeNum implements ProjectViewNodeDecorator {
             PsiComment @Nullable [] comments = PsiTreeUtil.getChildrenOfType(psiElement, PsiComment.class);
             if (comments != null) {
                 for (@NotNull PsiComment comment : comments) {
-                    line -= LineNum.strLine(comment.getText());
+                    int docLine = LineNum.strLine(comment.getText());
+                    if (docLine > 0) {
+                        line -= docLine;
+                    }
                 }
             }
             return line;
@@ -87,7 +93,7 @@ public class TreeNum implements ProjectViewNodeDecorator {
             return 0;
         }
         // skip png/zip/...
-        if (psiElement.getChildren().length == 0) {
+        if (psiElement.getFirstChild() == null) {
             return 0;
         }
         @Nullable VirtualFile virtualFile = psiFile.getVirtualFile();
