@@ -11,9 +11,11 @@ import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.packageDependencies.ui.PackageDependenciesNode;
+import com.intellij.psi.PsiBinaryFile;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiLargeFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
@@ -93,7 +95,7 @@ public class TreeNum implements ProjectViewNodeDecorator {
             return 0;
         }
         // skip png/zip/...
-        if (psiElement.getFirstChild() == null) {
+        if (psiElement instanceof PsiBinaryFile || psiElement instanceof PsiLargeFile) {
             return 0;
         }
         @Nullable VirtualFile virtualFile = psiFile.getVirtualFile();
