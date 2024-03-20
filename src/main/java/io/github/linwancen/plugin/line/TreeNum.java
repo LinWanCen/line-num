@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.List;
 
 public class TreeNum implements ProjectViewNodeDecorator {
@@ -75,6 +76,10 @@ public class TreeNum implements ProjectViewNodeDecorator {
         if (psiFile == null || psiFile.isDirectory()) {
             return childNode(node);
         }
+        // skip class/png/zip/...
+        if (psiFile instanceof PsiBinaryFile || psiFile instanceof PsiLargeFile) {
+            return 0;
+        }
         // method
         boolean parentIsDir = parentIsDir(node);
         if (!parentIsDir && AppSettingsState.getInstance().methodLine) {
@@ -94,10 +99,6 @@ public class TreeNum implements ProjectViewNodeDecorator {
         if (!AppSettingsState.getInstance().fileLine) {
             return 0;
         }
-        // skip png/zip/...
-        if (psiElement instanceof PsiBinaryFile || psiElement instanceof PsiLargeFile) {
-            return 0;
-        }
         @Nullable VirtualFile virtualFile = psiFile.getVirtualFile();
         if (virtualFile == null) {
             return 0;
@@ -110,7 +111,14 @@ public class TreeNum implements ProjectViewNodeDecorator {
         if (!AppSettingsState.getInstance().childNum) {
             return 0;
         }
-        return node.getChildren().size();
+        Collection<? extends AbstractTreeNode<?>> children;
+        try {
+            children = node.getChildren();
+        } catch (Throwable e) {
+            // java.lang.ArrayIndexOutOfBoundsException: Index ... out of bounds for length ...
+            return 0;
+        }
+        return children.size();
     }
 
     private static boolean parentIsDir(@NotNull ProjectViewNode<?> node) {
