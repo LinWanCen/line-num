@@ -9,6 +9,7 @@ import com.intellij.ide.util.treeView.PresentableNodeDescriptor;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.packageDependencies.ui.PackageDependenciesNode;
 import com.intellij.psi.PsiBinaryFile;
@@ -35,13 +36,13 @@ public class TreeNum implements ProjectViewNodeDecorator {
     @Override
     public void decorate(@NotNull ProjectViewNode node, @NotNull PresentationData data) {
         try {
-            int num = num(node);
-            if (num <= 0) {
+            String num = num(node);
+            if (num == null) {
                 return;
             }
-            addText(data, String.valueOf(num));
-        } catch (ProcessCanceledException ignore) {
-            // ignore
+            addText(data, num);
+        } catch (ProcessCanceledException e) {
+            throw e;
         } catch (Throwable e) {
             LOG.info("TreeState catch Throwable but log to record.", e);
         }
@@ -58,13 +59,13 @@ public class TreeNum implements ProjectViewNodeDecorator {
         data.addText(" " + text, SimpleTextAttributes.GRAY_ATTRIBUTES);
     }
 
-    private static int num(@NotNull ProjectViewNode<?> node) {
+    private static String num(@NotNull ProjectViewNode<?> node) {
         @Nullable Project project = node.getProject();
         if (project == null) {
-            return 0;
+            return null;
         }
         if (DumbService.isDumb(project)) {
-            return 0;
+            return null;
         }
         Object value = node.getValue();
         if (!(value instanceof PsiElement)) {
@@ -76,9 +77,10 @@ public class TreeNum implements ProjectViewNodeDecorator {
         if (psiFile == null || psiFile.isDirectory()) {
             return childNode(node);
         }
-        // skip class/png/zip/...
+        // class/png/zip/... show file size
         if (psiFile instanceof PsiBinaryFile || psiFile instanceof PsiLargeFile) {
-            return 0;
+            long length = psiFile.getVirtualFile().getLength();
+            return StringUtil.formatFileSize(length);
         }
         // method
         boolean parentIsDir = parentIsDir(node);
@@ -93,32 +95,32 @@ public class TreeNum implements ProjectViewNodeDecorator {
                     }
                 }
             }
-            return line;
+            return String.valueOf(line);
         }
         // file
         if (!AppSettingsState.getInstance().fileLine) {
-            return 0;
+            return null;
         }
         @Nullable VirtualFile virtualFile = psiFile.getVirtualFile();
         if (virtualFile == null) {
-            return 0;
+            return null;
         }
         @NotNull String path = virtualFile.getPath();
-        return LineNum.fileLine(path);
+        return String.valueOf(LineNum.fileLine(path));
     }
 
-    private static int childNode(@NotNull ProjectViewNode<?> node) {
+    private static String childNode(@NotNull ProjectViewNode<?> node) {
         if (!AppSettingsState.getInstance().childNum) {
-            return 0;
+            return null;
         }
         Collection<? extends AbstractTreeNode<?>> children;
         try {
             children = node.getChildren();
-        } catch (Throwable e) {
+        } catch (Throwable ignored) {
             // java.lang.ArrayIndexOutOfBoundsException: Index ... out of bounds for length ...
-            return 0;
+            return null;
         }
-        return children.size();
+        return String.valueOf(children.size());
     }
 
     private static boolean parentIsDir(@NotNull ProjectViewNode<?> node) {
